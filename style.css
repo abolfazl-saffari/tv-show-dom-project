@@ -1,0 +1,16 @@
+.title {
+  overflow: hidden;
+  /* height: 40px; */
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.summary {
+  overflow: hidden;
+  height: 100px;
+  text-overflow: ellipsis;
+  word-wrap: break-word;
+}
+
+.episodeMatch {
+  font-size: 0.75rem;
+}
