@@ -13,23 +13,13 @@ fetch("https://api.tvmaze.com/shows/82/episodes")
     optionGenerator(seriesData);
   });
 
-function optionGenerator(data) {
-  data.forEach((card) => {
-    console.log(card);
-    const optionElem = `<option value="${card.name}">S${
-      card.season < 10 ? `0${card.season}` : card.season
-    }E${card.number < 10 ? `0${card.number}` : card.number} - ${
-      card.name
-    }</option>`;
-    episodeMatchSelect.innerHTML += optionElem;
-  });
-}
-
 function cardGenerator(data) {
+  let allCards = "";
+  // rating: {average: 7.7}
   cardsContainerElem.innerHTML = "";
   data.forEach((card) => {
     const cardElem = `
-    <div class="card" style="width: 18rem">
+    <div class="card" >
       <img
       src="${card.image.medium}"
       class="card-img-top"
@@ -37,12 +27,12 @@ function cardGenerator(data) {
       <div class="card-body">
           <h5 class="card-title title m-0">${card.name}</h5>
           <h6 class='mt-1'>
-          S${card.season < 10 ? `0${card.season}` : card.season}E${
-      card.number < 10 ? `0${card.number}` : card.number
-    }
+          S${seasonAndEpisode(card.season)}E${seasonAndEpisode(card.number)}
           </h6>
-          <div class='summary'>
-            ${card.summary}
+          <div class='summaryWrapper'>
+            <div class='summary'>
+              ${card.summary}
+            </div>
           </div>
           <a href=${
             card.url
@@ -50,8 +40,55 @@ function cardGenerator(data) {
       </div>
     </div>
   `;
-    cardsContainerElem.innerHTML += cardElem;
+    allCards += cardElem;
   });
+  cardsContainerElem.innerHTML += allCards;
+}
+
+function optionGenerator(data) {
+  let allOptions = "";
+
+  data.forEach((card) => {
+    const optionElem = `
+    <option value="${card.name}">S${seasonAndEpisode(
+      card.season
+    )}E${seasonAndEpisode(card.number)} - ${card.name}</option>`;
+    allOptions += optionElem;
+  });
+  episodeMatchSelect.innerHTML += allOptions;
+}
+
+function seasonAndEpisode(n) {
+  return n < 10 ? `0${n}` : n;
+}
+
+function episodeSearch(input) {
+  const filteredCards = [...seriesData].filter(
+    (card) =>
+      card.name.toLocaleLowerCase().includes(input) ||
+      pTagRemover(card.summary).toLocaleLowerCase().includes(input)
+  );
+  if (filteredCards.length == 0) {
+    cardsContainerElem.innerHTML = "<h5>There is nothing to show.</h5>";
+  } else {
+    cardGenerator(filteredCards);
+  }
+  episodeMatch.innerHTML = `Episodes that matches ${filteredCards.length}.`;
+}
+
+function episodeSelect(select) {
+  if (select === "All episodes") {
+    cardGenerator([...seriesData]);
+  } else {
+    const filteredEpisode = [...seriesData].filter(
+      (episode) => episode.name === select
+    );
+    cardGenerator(filteredEpisode);
+  }
+}
+
+function pTagRemover(pTag) {
+  return pTag.replace("<p>", "").replace("</p>", "");
 }
 
 searchInput.addEventListener("input", (e) =>
@@ -60,26 +97,3 @@ searchInput.addEventListener("input", (e) =>
 episodeMatchSelect.addEventListener("input", (e) => {
   episodeSelect(e.target.value);
 });
-
-function episodeSearch(input) {
-  const filteredCards = [...seriesData].filter(
-    (card) =>
-      card.name.toLocaleLowerCase().includes(input) ||
-      pTagRemover(card.summary).toLocaleLowerCase().includes(input)
-  );
-  cardGenerator(filteredCards);
-  filteredCards.length === seriesData.length
-    ? (episodeMatch.innerHTML = "Episodes that matches 0")
-    : (episodeMatch.innerHTML = `Episodes that matches ${filteredCards.length}.`);
-}
-
-function episodeSelect(select) {
-  let filteredEpisode = [...seriesData].filter(
-    (episode) => episode.name === select
-  );
-  window.open(filteredEpisode[0].url, "_blank");
-}
-
-function pTagRemover(pTag) {
-  return pTag.replace("<p>", "").replace("</p>", "");
-}

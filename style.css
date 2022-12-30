@@ -1,14 +1,23 @@
+.card {
+  width: 18rem;
+}
 .title {
   overflow: hidden;
-  /* height: 40px; */
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+.summaryWrapper {
+  height: 80px;
+}
+
 .summary {
+  -webkit-box-orient: vertical;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
   overflow: hidden;
-  height: 100px;
   text-overflow: ellipsis;
-  word-wrap: break-word;
+  white-space: normal;
 }
 
 .episodeMatch {
