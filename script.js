@@ -15,7 +15,7 @@ fetch("https://api.tvmaze.com/shows/82/episodes")
 
 function cardGenerator(data) {
   let allCards = "";
-  // rating: {average: 7.7}
+
   cardsContainerElem.innerHTML = "";
   data.forEach((card) => {
     const cardElem = `
